@@ -2,8 +2,8 @@ import unreal
 import json
 import os
 
-source = os.path.expandvars('%userprofile%\Desktop\example.json') # TODO look through folder structure
-assetFolder = '/Game/Assets/'
+source = os.path.expandvars('%userprofile%\Desktop\example.json') # TODO json in this folder?
+assetFolder = '/Game/Assets/'# TODO look through folder structure
 
 with open(source) as data_file:
     data = json.load(data_file)

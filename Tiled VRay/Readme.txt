@@ -1,0 +1,1 @@
+Allows to split a VRay render into multiple chunks, saved incrementally to reduce complete loss of a render due to an unforeseen incident.
