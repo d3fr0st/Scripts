@@ -1,0 +1,32 @@
+[
+	{
+		"name": "corner",
+		"locx": 0,
+		"locy": 0,
+		"locz": 0
+	},
+	{
+		"name": "corner",
+		"locx": 0,
+		"locy": 100,
+		"locz": 0
+	},
+	{
+		"name": "corner",
+		"locx": 0,
+		"locy": 0,
+		"locz": 10
+	},
+	{
+		"name": "corner",
+		"locx": 50,
+		"locy": 5,
+		"locz": 0
+	},
+	{
+		"name": "corner",
+		"locx": 10,
+		"locy": 0,
+		"locz": 1
+	}
+]

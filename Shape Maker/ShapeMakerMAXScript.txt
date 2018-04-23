@@ -1,0 +1,67 @@
+plugin simpleObject decagon
+	name:"Decagon"
+	category:"Test Script"
+	classID:#(0x6ce3152f, 0x4e39e20b)
+--   author:"Laurent Dufresne"
+(
+	parameters main rollout:param1
+	(
+		radius type:#worldUnits ui:spnRadius default:10
+		wings type:#worldUnits ui:spnRadius default:5
+		height type:#worldUnits ui:spnHeight default:5
+	)
+		
+	rollout param1 "Parameters"
+	(
+		group "Basic"
+		(
+			spinner spnRadius "Radius: " range:[1e-9, 1e9, 10] type:#worldUnits
+			spinner spnWings "Wings: " range:[1e-9, 1e9, 5] type:#worldUnits
+			spinner spnHeight "Height: " range:[0, 1e9, 1] type:#worldUnits
+		)
+	)
+
+
+
+	
+	on buildMesh do
+	(
+		deca=cylinder()
+		deca.smooth=false
+		deca.heightsegs=0
+		deca.capsegs=1
+		deca.sides=10
+		deca.height=height
+		deca.radius=radius
+		deca.mapcoords=on
+		setmesh mesh deca.mesh
+		delete deca
+				
+		facelist=#()
+		facelist[1]=11
+		facelist[2]=12
+		facelist[3]=15
+		facelist[4]=16
+		facelist[5]=19
+		facelist[6]=20
+		facelist[7]=23
+		facelist[8]=24
+		facelist[9]=27
+		facelist[10]=28
+		
+		meshop.extrudeFaces mesh facelist wings 0 dir:#common
+	)
+
+	tool create numPoints:4
+	(
+		on mousePoint click do
+			if click == 1 do nodeTM.translation = worldPoint
+		
+		on mouseMove click do case click of
+		(
+			2: radius=(gridDist.x^2+gridDist.y^2)^.5
+			3: height=gridDist.z
+			4: wings=(gridDist.x^2+gridDist.y^2)^.5
+		)
+	)
+)
