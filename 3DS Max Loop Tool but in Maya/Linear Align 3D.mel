@@ -1,0 +1,34 @@
+{
+    float $temp[];    
+    vector $first;
+    vector $last;
+    float $distance;
+    vector $direction;
+    
+    string $vfList[] = `polyListComponentConversion -tv -fe`;
+    
+    if (size($vfList) > 1)
+    {
+        $temp = `xform -q -ws -t $vfList[0]`;
+        $first = <<$temp[0], $temp[1], $temp[2]>>;
+        $temp = `xform -q -ws -t $vfList[(size($vfList)-1)]`;
+        $last = <<$temp[0], $temp[1], $temp[2]>>;
+        
+        $direction = <<$last.x-$first.x, $last.y-$first.y, $last.z-$first.z>>;
+        $distance = sqrt(pow(($last.x-$first.x), 2) + pow(($last.y-$first.y), 2) + pow(($last.z-$first.z), 2)) / (size($vfList)-1);
+        $direction = $direction/sqrt(pow($direction.x, 2) + pow($direction.y, 2) + pow($direction.z, 2));   
+        
+        int $i;
+        for($i = 1; $i <= size($vfList) - 1; $i++)
+        {
+            vector $moveTo, $previous;
+            
+            $temp = `xform -q -ws -t $vfList[$i-1]`;
+            $previous = <<$temp[0], $temp[1], $temp[2]>>;
+            $moveTo = $previous + ($distance*$direction);
+            
+            $temp = `xform -q -ws -t $vfList[$i]`;
+            polyMoveVertex -t ($moveTo.x-$temp[0]) ($moveTo.y-$temp[1]) ($moveTo.z-$temp[2]) $vfList[$i];
+        }
+    } 
+}
