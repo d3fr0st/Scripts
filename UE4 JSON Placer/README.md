@@ -15,9 +15,8 @@ Unreal Studio Beta
 
 ### Running the script
 
-```
+
 Make sure to enable python script in the project.
 
 Looks for example.json on the user's desktop
 Assset path named in the json file is /Game/Assets/
-```
