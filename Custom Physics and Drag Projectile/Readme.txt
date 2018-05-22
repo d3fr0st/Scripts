@@ -1,1 +1,0 @@
-Custom physics calculations for non-rigid body objects, based on forces and accounts for drag and atmospheric conditions.

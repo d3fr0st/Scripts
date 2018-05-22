@@ -14,5 +14,5 @@ for line in data: # files are iterable
                 list += "HTTP://" + line.rsplit(' ')[0] + \n
                 
 
-with open("Butts.txt", "w") as text_file:
+with open("Proxy.txt", "w") as text_file:
     text_file.write(list)

@@ -1,1 +1,0 @@
-TODO: FBX Exporting script that stores models properties to a JSON before zeroing them out and exporting them for use with UE4 JSON Placer

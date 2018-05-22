@@ -1,1 +1,0 @@
-Places objects in an unreal scene based on data from a JSON file. Plan to make a Maya and 3ds max script to automatically export objects and create said JSON file. Currently limited only to the Unreal Studio beta branch of 4.19.

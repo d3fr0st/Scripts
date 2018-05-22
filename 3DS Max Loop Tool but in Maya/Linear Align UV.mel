@@ -1,0 +1,116 @@
+{
+    float $temp[];    
+    vector $first, $last;
+    float $distance = 0;
+    vector $direction;
+    int $farthestPoints;
+    string $vfList[] = `polyListComponentConversion -tuv`;
+    
+    
+    int $i , $j, $k, $l; // Reusable variable since you can't 
+    
+    for ($i = 0; $i <= size($vfList) - 1; $i++) // Split up consecutive UVs
+    {
+               
+        if(`match ":" $vfList[$i]` == ":")
+        {
+            //print("\nMATCH \n"); // DEBUG
+            string $listBuffer[] = stringToStringArray($vfList[0], "[:]");
+            string $nameBuffer = $listBuffer[0] + "[";
+            int $lenght = (int)$listBuffer[2]-(int)$listBuffer[1];
+            int $index;
+            string $temp[];
+        
+            for($j = 0; $j <= $lenght; $j++)
+            {
+                $index = (int)$listBuffer[1] + $j;
+                $temp[$j] = $nameBuffer + $index + "]";
+            }
+            
+        
+            //$vfList = $temp;
+            stringArrayRemoveAtIndex($i, $vfList);
+            int $x;
+            for($x = 0; $x < size($temp); $x++)
+            {
+                stringArrayInsertAtIndex(($i + $x), $vfList, $temp[$x]);
+            } 
+        }
+    }
+    
+    
+    float $uvList[] = `polyEditUV -q $vfList`; // String array (ex: .map[48]) to array of coordinates;
+    
+    for ($i = 0; $i <= size($vfList) - 1; $i++) // Sort UV array by distance
+    {
+        for($j = 0; $j <= size($vfList) - 1; $j++)
+        {
+            if($i != $j)
+            {
+                vector $point1 = <<$uvList[$i * 2], $uvList[($i * 2) + 1], 0>>;
+                vector $point2 = <<$uvList[$j * 2], $uvList[($j * 2) + 1], 0>>;
+                
+                float $newDistance = sqrt(pow(($point2.x-$point1.x), 2) + pow(($point2.y-$point1.y), 2) + pow(($point2.z-$point1.z), 2));
+                if ($newDistance > $distance) // Find the two farthest points and store one
+                {
+                    $distance = $newDistance;
+                    $farthestPoints = $i;
+                }
+            }
+        }
+    }
+    
+    
+    string $buffer[] = $vfList;
+    
+    
+    stringArrayRemoveAtIndex($farthestPoints, $buffer);
+    stringArrayInsertAtIndex(0, $buffer, $vfList[$farthestPoints]);
+    
+    float $uvBuffer[] = `polyEditUV -q $buffer`;
+    
+    for($i = 1; $i <= size($buffer) - 1; $i++)
+    {
+        float $distanceCurrent = sqrt(pow(($uvBuffer[$i * 2]-$uvBuffer[0]), 2) + pow(($uvBuffer[($i * 2) + 1]-$uvBuffer[1]), 2) + 0);
+        
+        $j = $i-1;
+        float $distancePrevious = sqrt(pow(($uvBuffer[$j * 2]-$uvBuffer[0]), 2) + pow(($uvBuffer[($j * 2) + 1]-$uvBuffer[1]), 2) + 0);
+        
+        while ($j>0 && $distanceCurrent < $distancePrevious)
+        {
+            string $temp = $buffer[$i];
+            stringArrayRemoveAtIndex($i, $buffer);
+            
+            stringArrayInsertAtIndex($j, $buffer, $temp);
+            $j-=1;
+            $distancePrevious = sqrt(pow(($uvBuffer[$j * 2]-$uvBuffer[0]), 2) + pow(($uvBuffer[($j * 2) + 1]-$uvBuffer[1]), 2) + 0);
+        }
+    }
+    
+    $vfList = $buffer;
+    $uvList = `polyEditUV -q $vfList`; // String array (ex: .map[48]) to array of coordinates;
+    
+
+    if (size(`polyEditUV -q $vfList`) > 1)
+    {
+        
+        $first = <<$uvList[0], $uvList[1], 0>>; // Can remove after changes?
+        $last = <<$uvList[size($uvList) - 2], $uvList[size($uvList) - 1], 0>>; // Can remove after changes?
+        
+        $direction = <<$last.x-$first.x, $last.y-$first.y, $last.z-$first.z>>; // Vector from Point A to Point B
+        $distance = sqrt(pow(($last.x-$first.x), 2) + pow(($last.y-$first.y), 2) + 0) / (size($vfList)-1); // Distance from Point A to Point B, divided by number of points
+        $direction = $direction/sqrt(pow($direction.x, 2) + pow($direction.y, 2) + 0); // Normalize vector
+        
+        
+        for($i = 1; $i <= (size($vfList) - 1); $i++)
+        {
+            
+            vector $moveTo, $previous;
+            int $index = $i * 2;
+            
+            $previous = <<$uvList[$index - 2], $uvList[$index - 1], 0>>;
+            $moveTo = $first + ($distance*$direction*$i);
+            polyEditUV -r false -u ($moveTo.x) -v ($moveTo.y) $vfList[$i];
+        }
+    }
+}
